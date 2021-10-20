@@ -1,21 +1,37 @@
-import React, { useEffect } from 'react';
-import Button from 'react-bootstrap/Button';
-import {getCoinsMarket} from './services/api';
+import React from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
+
+import Home from './pages/home/home';
+import Details from './pages/details/details';
+import FourZeroFour from './pages/fourZeroFour/fourZeroFour';
+import Header from './components/header/header';
+
 
 function App() {
-useEffect(() =>{
-  const getCoinsMarketParams = {
-    vs_currency: 'eur',
-    per_page: 10
-  }
-  getCoinsMarket(getCoinsMarketParams);
-}, [])
+
+ 
 
   return (
     <div className="App">
-      <Button variant="danger">Click me</Button>
-    </div>
-         
+      <Header />
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route path="/details">
+            <Details />
+          </Route>
+          <Route>
+            <FourZeroFour/>
+          </Route>
+        </Switch>
+      </Router >
+    </div >
   );
 }
 
