@@ -6,11 +6,14 @@ import './home.css';
 
 const Home = () => {
 
+    let initPage = sessionStorage.getItem('page');
+    if(initPage !== null)initPage = Number(initPage);
+
     const [list, setList] = useState([]);
     const [error, setError] = useState('');
-    const [tablePageNo, setTablePageNo] = useState(1);
+    const [tablePageNo, setTablePageNo] = useState(initPage || 1);
     const [loading, setLoading] = useState(true);
-    
+
   useEffect(() => {
     const getCoinsMarketParams = {
       vs_currency: 'eur',
@@ -38,6 +41,7 @@ const Home = () => {
     }
     
     fetchList()
+    sessionStorage.setItem('page', tablePageNo)
   }, [tablePageNo])
 
   function buildTableHeaderData() {
@@ -51,6 +55,7 @@ const Home = () => {
   function handlePrevTablePage() {
       if(tablePageNo === 1)return
     setTablePageNo(prev => prev-1);
+
   }
 
     return(
