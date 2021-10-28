@@ -1,68 +1,46 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { getCoinDetails } from '../../services/api';
-import TableComponent from '../../components/table/table';
-import Spinner from 'react-bootstrap/Spinner';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHome } from '@fortawesome/free-solid-svg-icons'
+import React, { useState } from 'react';
+import { Table } from 'react-bootstrap';
+import { Pagination } from 'react-bootstrap';
+import { Link } from "react-router-dom";
+import './table.css';
 
-const Details = () => {
 
-    const [loading, setLoading] = useState(false);
-    const [tableData, setTableData] = useState({});
-    const [coinDescription, setCointDescription] = useState('');
-    const [homepages, setHomepages] = useState([]);
-    const location = useLocation();
 
-    useEffect(() => {
-        const coinId = location.pathname.substr(9);
-        const getCoinDetailsParams = {};
+const TableComponent = ({ headerData, tableData, decrementPageNo, incrementPageNo, pageNo = 0, decrementButtonDisable = false, showPagination=true, containerClassName='' }) => {
 
-        async function fetchDetails() {
-            setLoading(true);
-            const res = await getCoinDetails(coinId, getCoinDetailsParams)
-            if (res.data) {
-                console.log(res.data);
-                setTableData({
-                    name: res.data.name,
-                    symbol: res.data.symbol,
-                    hashing_algorithm: res.data.hashing_algorithm,
-                    market_cap_eur: res.data.market_data?.market_cap?.eur,
-                    genesis_date: res.data.genesis_date
-                })
-                setCointDescription(res.data.description.en);
-                setHomepages(res.data.links.homepage);
-            }
-            setLoading(false);
-        }
-
-        fetchDetails()
-    }, [])
-
-    function buildTableHeaderData() {
-        return Object.keys(tableData);
+    const getTableRow = () => {
+        return tableData.map((rowObj, index) => {
+            return <tr key={"table-row-" + index}>
+                {headerData.map((v, index) => (<td key={v + index}>
+                    {v === 'image' ? <Link to={`/details/${rowObj.id}`}>
+                        <img src={rowObj[v]} width="50px" alt="bitcoin icon" onLoad={() => console.log("image loaded")} />
+                    </Link> : rowObj[v]}
+                </td>))}
+            </tr>
+        })
     }
 
     return (
-        <div className="p-5">
-            {loading ? <Spinner animation="border" variant="primary" className="spinner-center" />
-                :
-                <div>
-                    <Link to="/"><FontAwesomeIcon icon={faHome} size={'2x'} color="#55ff00"/> Go Back to home</Link>
-                    <TableComponent
-                        containerClassName="mt-4"
-                        headerData={buildTableHeaderData()}
-                        tableData={[tableData]}
-                        showPagination={false} />
-                        {/* <div className="description-container" dangerouslySetInnerHTML={{__html: coinDescription}}></div> */}
-                        <iframe srcDoc={'<head><base target="_blank"> </head>' +  coinDescription} width={'100%'} style={{minHeight: '20rem', border: 'none'}}/>
-                        <div className="d-flex flex-column">
-                            {homepages.map((hp, index) => <a key={hp + index} href={hp} target="_blank">{hp}</a>)}
-                        </div>
-                </div>
-            }
+        <div className={containerClassName}>
+            <Table striped bordered hover responsive>
+                <thead>
+                    <tr>
+                        {headerData.map(th => <th key={th} style={{ textTransform: 'uppercase' }}>{th}</th>)}
+                    </tr>
+                </thead>
+                <tbody>
+                    {getTableRow()}
+                </tbody>
+            </Table>
+            {showPagination && <div className="table-pagination">
+                <Pagination>
+                    <Pagination.Prev onClick={decrementPageNo} disabled={decrementButtonDisable} />
+                    <Pagination.Item>{pageNo}</Pagination.Item>
+                    <Pagination.Next onClick={incrementPageNo} />
+                </Pagination>
+            </div>}
         </div>
     )
 }
 
-export default Details;
+export default TableComponent;

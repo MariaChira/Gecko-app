@@ -1,11 +1,12 @@
 import axios from 'axios';
 
-const instance = axios.create({
+export const instance = axios.create({
     baseURL: 'https://api.coingecko.com/api/v3',
     headers: {'Accept': 'application/json'}
 });
 
-const buildParams = (params) => {
+
+export const buildParams = (params) => {
     if(params === undefined)return ''
     const arr = [];
     Object.keys(params).forEach(k => {
@@ -15,7 +16,7 @@ const buildParams = (params) => {
 }
 
 //TODO reqParams to be array
-const validateParams = (params, reqParams) => {
+export const validateParams = (params, reqParams) => {
     let isValid = params !== undefined;
     if(params){
         const paramsArray = Object.keys(params);
