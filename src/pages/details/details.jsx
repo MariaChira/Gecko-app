@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { getCoinDetails } from '../../services/api';
 import TableComponent from '../../components/table/table';
 import Spinner from 'react-bootstrap/Spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome } from '@fortawesome/free-solid-svg-icons'
+import { AppContext } from '../../context/context';
 
 const Details = () => {
 
@@ -13,6 +14,9 @@ const Details = () => {
     const [coinDescription, setCointDescription] = useState('');
     const [homepages, setHomepages] = useState([]);
     const location = useLocation();
+    const context = useContext(AppContext);
+
+    console.log(context)
 
     useEffect(() => {
         const coinId = location.pathname.substr(9);

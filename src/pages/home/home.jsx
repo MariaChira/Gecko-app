@@ -1,69 +1,64 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { getCoinsMarket } from '../../services/api';
 import TableComponent from '../../components/table/table';
 import Spinner from 'react-bootstrap/Spinner';
-import {useCoinsMarketHome} from '../../customHooks/useCoinsMarketHome';
+import { AppContext } from '../../context/context';
 import './home.css';
 
 const Home = () => {
 
-    let initPage = sessionStorage.getItem('page');
-    if(initPage !== null)initPage = Number(initPage);
-
     const [list, setList] = useState([]);
     const [error, setError] = useState('');
-    const [tablePageNo, setTablePageNo] = useState(initPage || 1);
+    const [, rerender] = useState();
     const [loading, setLoading] = useState(true);
 
-    const res = useCoinsMarketHome({
-          vs_currency: 'eur',
-          per_page: 10,
-          page: tablePageNo
-        });
-    console.log(res)
-
-  // useEffect(() => {
-  //   const getCoinsMarketParams = {
-  //     vs_currency: 'eur',
-  //     per_page: 10,
-  //     page: tablePageNo
-  //   };
-
-  //   async function fetchList(){
-  //       setLoading(true);
-  //       const res = await getCoinsMarket(getCoinsMarketParams);
-  //       console.log(res)
-  //       if(res.data)setList(res.data.map(k => {
-  //           return {
-  //               id: k.id,
-  //               image: k.image,
-  //               name: k.name,
-  //               symbol: k.symbol,
-  //               current_price: k.current_price,
-  //               high_24h: k.high_24h,
-  //               low_24h: k.low_24h
-  //           }
-  //       }));
-  //       else if(res.error)setError(res.error)
-  //       setLoading(false);
-  //   }
+    const context = useContext(AppContext);
     
-  //   fetchList()
-  //   sessionStorage.setItem('page', tablePageNo)
-  // }, [tablePageNo])
+  useEffect(() => {
+    console.log("use-effect")
+    const getCoinsMarketParams = {
+      vs_currency: 'eur',
+      per_page: 10,
+      page: context.tablePage
+    };
+
+    async function fetchList(){
+        setLoading(true);
+        const res = await getCoinsMarket(getCoinsMarketParams);
+        console.log(res)
+        if(res.data)setList(res.data.map(k => {
+            return {
+                id: k.id,
+                image: k.image,
+                name: k.name,
+                symbol: k.symbol,
+                current_price: k.current_price,
+                high_24h: k.high_24h,
+                low_24h: k.low_24h
+            }
+        }));
+        else if(res.error)setError(res.error)
+        setLoading(false);
+    }
+    
+    fetchList()
+  }, [context.tablePage])
 
   function buildTableHeaderData() {
       return Object.keys(list[0]).filter(k => k !== 'id');
   }
 
   function handleNextTablePage() {
-    setTablePageNo(prev => prev+1);
+    context.tablePage = context.tablePage + 1;
+    //setTablePageNo(prev => prev+1);
+    rerender(context.tablePage)
   }
 
   function handlePrevTablePage() {
-      if(tablePageNo === 1)return
-    setTablePageNo(prev => prev-1);
-
+      if(context.tablePage === 1)return
+      context.tablePage = context.tablePage - 1;
+    //setTablePageNo(prev => prev-1);
+    rerender(context.tablePage)
   }
 
     return(
@@ -75,8 +70,8 @@ const Home = () => {
             tableData={list}
             incrementPageNo={handleNextTablePage}
             decrementPageNo={handlePrevTablePage}
-            decrementButtonDisable={tablePageNo === 1}
-            pageNo={tablePageNo}/> : <div style={{color: 'red'}}>{error}</div>}
+            decrementButtonDisable={context.tablePage === 1}
+            pageNo={context.tablePage}/> : <div style={{color: 'red'}}>{error}</div>}
         </div>
     )
 }
