@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { getCoinDetails } from '../../services/api';
 import TableComponent from '../../components/table/table';
@@ -37,7 +37,7 @@ const Details = () => {
         }
 
         fetchDetails()
-    }, [])
+    }, [location.pathname])
 
     function buildTableHeaderData() {
         return Object.keys(tableData);
@@ -54,8 +54,8 @@ const Details = () => {
                         headerData={buildTableHeaderData()}
                         tableData={[tableData]}
                         showPagination={false} />
-                        {/* <div className="description-container" dangerouslySetInnerHTML={{__html: coinDescription}}></div> */}
-                        <iframe srcDoc={'<head><base target="_blank"> </head>' +  coinDescription} width={'100%'} style={{minHeight: '20rem', border: 'none'}}/>
+                        <div className="description-container" dangerouslySetInnerHTML={{__html: coinDescription}}></div>
+                        {/* <iframe srcDoc={'<head><base target="_blank"> </head>' +  coinDescription} width={'100%'} style={{minHeight: '20rem', border: 'none'}}/> */}
                         <div className="d-flex flex-column">
                             {homepages.map((hp, index) => <a key={hp + index} href={hp} target="_blank">{hp}</a>)}
                         </div>

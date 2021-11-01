@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -8,8 +8,21 @@ import Home from './pages/home/home';
 import Details from './pages/details/details';
 import FourZeroFour from './pages/fourZeroFour/fourZeroFour';
 import Header from './components/header/header';
+import { usePersistentStorage } from './customHooks/usePersistentStorage';
 
 function App() {
+
+  const data = {
+    user: 'Cristi',
+    info: {
+      work: 'developer',
+      sda: 'trainner',
+      hobbies: ['music', 'javascript', 'python', 'books', 'electronics']
+    }
+  };
+
+  const res = usePersistentStorage('get', 'test', data, 'local');
+  console.log(res)
 
   return (
     <div className="App">
